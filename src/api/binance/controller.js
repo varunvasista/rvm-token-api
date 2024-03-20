@@ -20,11 +20,29 @@ export const balance = async ({ params }, res, next) =>{
 
   const address = params.address;
 
-  // Get Balance
-  let bal = await web3.eth.getBalance(address);
-  let balance = web3.utils.fromWei(bal, 'ether');
+  web3.eth.getBalance(address)
+  .then((balance)=>{
+    if (balance > 0) {
+      var bal = web3.utils.fromWei(balance,'ether');
+      res.status(200).json({
+        status: true,
+        balance: bal
+      });
+    } else {
+      res.status(200).json({
+        status: true,
+        balance: "0"
+      });
+    }
 
-  res.status(200).json({ balance: balance });
+  })
+  .catch((err)=>{
+    console.log(err);
+    res.status(201).json({
+      status: false,
+      message: 'Invalid Ethereum Address or Details Not Found'
+    });
+  });
 }
 
 
